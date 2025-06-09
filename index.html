@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kripto Para Anlaşma Platformu</title>
+    <!-- Tailwind CSS CDN - Hızlı ve modern stil için -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Genel Stil Tanımlamaları */
+        body {
+            font-family: "Inter", sans-serif; /* Modern ve okunaklı Inter fontu */
+            background: linear-gradient(135deg, #1c1c1c 0%, #080808 100%); /* Koyu, derin ve şık gradient arka plan */
+            color: #e0e0e0; /* Genel metin rengi: Açık gri */
+            min-height: 100vh; /* Sayfanın tam yüksekliği kaplaması */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden; /* Yatay kaydırmayı engeller */
+        }
+
+        /* Ana Kapsayıcı: İçerik ve menülerin bulunduğu kutu */
+        .main-container {
+            width: 95%; /* Mobil cihazlar için daha geniş kullanım alanı */
+            max-width: 1200px; /* Maksimum genişlik */
+            background-color: rgba(25, 25, 25, 0.95); /* Yarı şeffaf, koyu bir arka plan */
+            border-radius: 1.25rem; /* Daha belirgin yuvarlak köşeler */
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.6); /* Daha belirgin gölge efekti */
+            display: flex;
+            flex-direction: column; /* Mobil için dikey düzen */
+            min-height: 85vh; /* Minimum yükseklik */
+            overflow: hidden; /* Taşmayı engeller */
+        }
+
+        /* Medya Sorgusu: Tablet ve Masaüstü Görünümleri İçin */
+        @media (min-width: 768px) {
+            .main-container {
+                flex-direction: row; /* Masaüstünde yatay düzen */
+                width: 90%;
+            }
+        }
+
+        /* Başlık (Header) Alanı */
+        header {
+            background: linear-gradient(90deg, #121212 0%, #303030 100%); /* Koyu gri gradient */
+            color: white; /* Metin rengi beyaz */
+            padding: 1.5rem 2rem; /* İç boşluklar */
+            border-bottom: 3px solid #e8491d; /* Turuncu alt çizgi */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top-left-radius: 1.25rem; /* Üst sol köşe yuvarlak */
+            border-top-right-radius: 1.25rem; /* Üst sağ köşe yuvarlak */
+        }
+
+        /* Medya Sorgusu: Masaüstünde başlık için köşe düzeltmeleri */
+        @media (min-width: 768px) {
+            header {
+                border-top-right-radius: 0; /* Masaüstünde sağ üst köşeyi düzelt */
+            }
+        }
+
+        /* Menü İkonu (Hamburger) Stili */
+        .menu-icon {
+            cursor: pointer; /* Fare imleci işaretçi olur */
+            display: block; /* Mobil için varsayılan olarak görünür */
+            z-index: 100; /* Diğer öğelerin üzerinde kalır */
+            padding: 0.5rem; /* Dokunma alanı için boşluk */
+            border-radius: 0.5rem; /* Hafif yuvarlak köşeler */
+            transition: background-color 0.3s ease; /* Arka plan rengi değişimine animasyon */
+        }
+
+        .menu-icon:hover {
+            background-color: rgba(255, 255, 255, 0.1); /* Üzerine gelindiğinde hafif vurgu */
+        }
+
+        .menu-icon div {
+            width: 28px; /* Çizgi genişliği */
+            height: 3px; /* Çizgi yüksekliği */
+            background-color: white; /* Çizgi rengi beyaz */
+            margin: 6px 0; /* Çizgiler arası boşluk */
+            border-radius: 2px; /* Çizgi köşeleri yuvarlak */
+            transition: all 0.3s ease; /* Tüm geçişlere animasyon */
+        }
+
+        /* Medya Sorgusu: Masaüstünde menü ikonunu gizle */
+        @media (min-width: 768px) {
+            .menu-icon {
+                display: none; /* Masaüstünde gizle */
+            }
+        }
+
+        /* Yan Menü (Sidebar) Stili */
+        .sidebar {
+            width: 0; /* Başlangıçta gizli (genişlik 0) */
+            background: #202020; /* Koyu gri arka plan */
+            color: #e0e0e0; /* Metin rengi açık gri */
+            overflow-x: hidden; /* Yatay taşmayı gizler */
+            transition: 0.4s ease-in-out; /* Açılma/kapanma animasyonu */
+            padding-top: 60px; /* İçerik ikonun altından başlar */
+            position: fixed; /* Sabit pozisyon */
+            top: 0;
+            left: 0;
+            height: 100%; /* Tam ekran yüksekliği */
+            z-index: 90; /* İçerik üzerinde kalır */
+            border-right: 1px solid rgba(255, 255, 255, 0.08); /* Sağ kenarlık */
+            border-radius: 0 1.25rem 1.25rem 0; /* Sağ köşeler yuvarlak */
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5); /* Hafif gölge */
+        }
+
+        .sidebar.open {
+            width: 250px; /* Açıkken genişlik */
+            padding-top: 0; /* Açıkken iç boşluğu sıfırla */
+        }
+
+        /* Medya Sorgusu: Masaüstünde yan menü hep açık */
+        @media (min-width: 768px) {
+            .sidebar {
+                position: relative; /* Akışta konumlandırma */
+                width: 250px; /* Masaüstünde sürekli açık */
+                padding-top: 0;
+                height: auto;
+                border-radius: 0; /* Köşeleri düzelt */
+                border-right: none;
+                box-shadow: none; /* Gölgeyi kaldır */
+            }
+            .sidebar.open {
+                width: 250px; /* Masaüstünde hep açık olduğu için bu kuralın etkisi olmaz */
+            }
+        }
+
+        /* Yan Menü Liste Öğeleri */
+        .sidebar ul {
+            list-style: none; /* Liste işaretlerini kaldır */
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar li {
+            padding: 1.1rem 1.5rem; /* İç boşluklar */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06); /* Alt çizgi */
+            transition: background-color 0.3s ease, color 0.3s ease; /* Renk geçişleri */
+            cursor: pointer; /* Fare imleci işaretçi olur */
+            font-size: 1.05rem; /* Yazı boyutu */
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar li:hover {
+            background-color: #333; /* Üzerine gelindiğinde koyu gri */
+            color: white; /* Metin rengi beyaz */
+        }
+
+        .sidebar li.active {
+            background-color: #e8491d; /* Aktif menü öğesi turuncu */
+            color: white; /* Metin rengi beyaz */
+            font-weight: bold; /* Kalın font */
+            border-left: 5px solid #ff7a00; /* Aktif öğeye sol kenarlık */
+        }
+
+        /* İçerik Alanı */
+        .content-area {
+            flex-grow: 1; /* Kalan tüm alanı kaplar */
+            padding: 2.5rem; /* İç boşluklar */
+            min-height: 500px; /* Minimum yükseklik */
+            overflow-y: auto; /* Dikey kaydırmaya izin ver */
+        }
+
+        /* Sekme İçerikleri */
+        .tab-content {
+            display: none; /* Varsayılan olarak gizli */
+            animation: fadeIn 0.6s ease-in-out; /* Geçiş efekti */
+        }
+
+        .tab-content.active {
+            display: block; /* Aktif olanı göster */
+        }
+
+        /* Başlıklar */
+        h2 {
+            color: #e8491d; /* Turuncu başlık */
+            margin-top: 0;
+            margin-bottom: 1.8rem;
+            font-size: 2.5rem; /* Daha büyük başlık */
+            text-align: center; /* Ortalanmış */
+            border-bottom: 2px solid rgba(232, 73, 29, 0.3); /* Hafif alt çizgi */
+            padding-bottom: 0.8rem;
+        }
+        h3 {
+            color: #b0b0b0; /* Açık gri alt başlık */
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.6rem;
+        }
+
+        /* Paragraflar */
+        p {
+            line-height: 1.8; /* Daha iyi okunabilirlik için satır aralığı */
+            margin-bottom: 1.2rem;
+            text-align: justify; /* Metni yasla */
+        }
+
+        /* Link Stilleri */
+        a {
+            color: #66b3ff; /* Mavi link rengi */
+            text-decoration: none; /* Alt çizgi yok */
+            transition: color 0.3s ease;
+        }
+        a:hover {
+            color: #4da6ff; /* Üzerine gelindiğinde daha açık mavi */
+            text-decoration: underline; /* Üzerine gelindiğinde alt çizgi */
+        }
+
+        /* "Bize Ulaşın" bölümü için özel stil */
+        .contact-info {
+            background-color: rgba(40, 40, 40, 0.8);
+            padding: 1.8rem;
+            border-radius: 1rem;
+            text-align: center;
+            margin-top: 2.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .contact-info p {
+            font-size: 1.15rem;
+            color: #c5c5c5;
+        }
+
+        .contact-info strong {
+            color: #e8491d; /* Vurgulu metin turuncu */
+        }
+
+        /* Animasyonlar */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(25px); /* Hafif yukarıdan gelir */
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HTML Yorum: Tüm sayfa içeriğini ve menüleri barındıran ana kapsayıcı div -->
+    <div class="main-container">
+        <!-- HTML Yorum: Başlık (Header) alanı, site adı ve hamburger menüyü içerir -->
+        <header>
+            <!-- HTML Yorum: Hamburger menü ikonu. Mobil görünümde görünür. Tıklandığında yan menüyü açar/kapatır. -->
+            <div class="menu-icon" onclick="toggleSidebar()">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <!-- HTML Yorum: Site Başlığı -->
+            <h1 class="text-3xl font-bold flex-grow text-center md:text-left">Kripto Para Anlaşma Platformu</h1>
+        </header>
+
+        <!-- HTML Yorum: Yan Menü (Sidebar) alanı. Kategorileri ve gezinme bağlantılarını içerir. -->
+        <div class="sidebar" id="sidebar">
+            <ul>
+                <!-- HTML Yorum: Menü Öğeleri. Tıklandığında ilgili içeriği gösterir. -->
+                <li onclick="showContent('welcome')" class="active">Hoş geldiniz</li>
+                <li onclick="showContent('campaigns')">Anlaşma Kampanyaları</li>
+                <li onclick="showContent('privacy-policy')">Gizlilik Politikası</li>
+                <li onclick="showContent('assurance')">Güvence</li>
+                <li onclick="showContent('contact')">Bize Ulaşın</li>
+            </ul>
+        </div>
+
+        <!-- HTML Yorum: Ana İçerik Alanı. Seçilen menü öğesinin içeriği burada gösterilir. -->
+        <div class="content-area">
+            <!-- HTML Yorum: "Hoş Geldiniz" Sekmesi İçeriği -->
+            <div id="welcome-content" class="tab-content active">
+                <h2>Hoş geldiniz</h2>
+                <p>ANLAŞMA HAKINDA</p>
+                <p>Belirtilen oyunu oynayın ve kolayca puan kazanın. Minimum çekim limitini öğrenmek için Instagram hesabımızdan bize ulaşın.</p>
+                <p>
+                   Anlaşma için para gereklimi
+                  anlaşma için bir ücret ödemesiniz tamamen yatırımsız oyun oynayarak btc kazanırsınız (sıtandar komisyon kesilir ilk gün komisyon kesilmez)
+                </p>
+            </div>
+
+            <!-- HTML Yorum: "Anlaşma Kampanyaları" Sekmesi İçeriği -->
+            <div id="campaigns-content" class="tab-content">
+                <h2>Anlaşma Kampanyaları</h2>
+                <p>Şu anda bir etkinlik yok ama kulanıcı sayısı artıkca ramdom 100 dolar dağıtılabilir</p>
+            </div>
+
+            <!-- HTML Yorum: "Gizlilik Politikası" Sekmesi İçeriği -->
+            <div id="privacy-policy-content" class="tab-content">
+                <h2>Gizlilik Politikası</h2>
+                
+                <h3>Tüm Politikalarımız</h3>
+                
+                   <h1>POLİTİKA 1</h1> 
+                   <p>
+                    ANLAŞMA ÜCRETSİZDİR VE KİMSEDEN ÜCRET TALEP ETMEZ
+                </p>
+                    POLİTİKA 2 
+                    VERİ GUVENLİĞİ
+                    VERİLERİNİZ ÖZENLE KORUNUR
+                    İÇİNİZ RAHAT OLABİLİR
+                  </p>
+                  <h>POLİTİKA 3</h>
+                  <p>ANLAŞMA YAPARAK TÜM ŞARTLARI KABUL ETMİŞ OLURSUNUZ </p>
+                    <h1>POLİTİKA 4</h1>
+                    <p>YAŞ SINIRI YOKTUR
+                    VE KİŞİSEL BİR BİLGİYE Y
+                    GEREK YOKTUR</p>
+                    <h1>POLİTİKA 5</h1
+                   <p>KOMİSYON NEDEN ALINIR
+                    KOMİSYONLAR'IN %10 KADARI BİZE KER OLARAK GEÇER DİYER 90% KISMI İSE DAĞITIM HAVUZUNDA BİRİKİR SORNA YETERLİ MİKTARA ULAŞINCA RASKELE CARK 2 DEFA DÖNDÜRÜLÜR VE CIKAN İD İSİMLİ KULANICIYA VERİLİR (KOMİSYON YOKTUR)%50 VERİLİR</p> 
+    
+
+                <h3>Şartlarımız</h3>
+                <p>KURALAR</p>
+                <p>1.oyundan coin cekmek anlaşmayı sonlandırır ve hesabın silinmesine yol açar</p>
+                <p>2.İlk anlaşma günü komisyon kesilmez bu yüzden minimum 10.000 puan(0.01 dolar) çekilebilir 4 günde bir cekim yapılır sornaki günler minimum 15.000 puan olur ve 5.000 puan komisyon kesilir</p>
+            </div>
+
+            <!-- HTML Yorum: "Güvence" Sekmesi İçeriği -->
+            <div id="assurance-content" class="tab-content">
+                <h2>Güvence</h2>
+                <p>Burası doldurulacak.</p>
+            </div>
+
+            <!-- HTML Yorum: "Bize Ulaşın" Sekmesi İçeriği -->
+            <div id="contact-content" class="tab-content">
+                <h2>Bize Ulaşın</h2>
+                <div class="contact-info">
+                    <h3>İletişim Kanalımız</h3>
+                    <p>Tek iletişim kanalımız Instagram üzerindendir. Lütfen sorularınız ve geri bildirimleriniz için bizi Instagram üzerinden takip edin ve mesaj gönderin.</p>
+                    <p>Instagram: <a href="https://www.instagram.com/tr_craft_xss?igsh=MTY0aG50c2g0MXY2bg==" target="_blank" rel="noopener noreferrer"><strong>tr_craft_xss</strong></a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* JavaScript Yorum: Yan menü (sidebar) açma/kapatma fonksiyonu */
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            } else {
+                sidebar.classList.add('open');
+            }
+        }
+
+        /* JavaScript Yorum: İçerik sekmelerini gösterme/gizleme fonksiyonu */
+        function showContent(sectionId) {
+            // Tüm içerik sekmelerini gizle
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Sadece seçilen sekme içeriğini göster
+            document.getElementById(`${sectionId}-content`).classList.add('active');
+
+            // Tüm menü öğelerinden aktif sınıfını kaldır
+            document.querySelectorAll('.sidebar li').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Tıklanan menü öğesine aktif sınıfını ekle
+            event.currentTarget.classList.add('active');
+
+            // Mobil görünümde menüyü kapat
+            if (window.innerWidth < 768) {
+                toggleSidebar();
+            }
+        }
+
+        /* JavaScript Yorum: Sayfa yüklendiğinde varsayılan olarak "Hoş Geldiniz" sekmesini göster */
+        document.addEventListener('DOMContentLoaded', () => {
+            // İlk yüklendiğinde 'Hoş Geldiniz' menü öğesini aktif yap
+            document.querySelector('.sidebar li:first-child').classList.add('active');
+
+            // Masaüstü için menüyü varsayılan olarak açık tut
+            if (window.innerWidth >= 768) {
+                document.getElementById('sidebar').classList.add('open');
+            }
+        });
+
+        /* JavaScript Yorum: Ekran boyutu değiştiğinde menü davranışını ayarla (Mobil/Masaüstü Geçişleri) */
+        window.addEventListener('resize', () => {
+            const sidebar = document.getElementById('sidebar');
+            // Eğer masaüstü boyutuna geçildiyse (768px ve üzeri) ve menü kapalıysa otomatik aç
+            if (window.innerWidth >= 768 && !sidebar.classList.contains('open')) {
+                sidebar.classList.add('open');
+            }
+            // Eğer mobil boyutuna geçildiyse (768px altı) ve menü açıksa otomatik kapat
+            else if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>
+
